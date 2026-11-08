@@ -10,6 +10,8 @@ REPO_DIR="/var/www/repo"
 REPO_FILE="/etc/yum.repos.d/${REPO_NAME}.repo"
 PACKAGES=(httpd mod_ssl)
 
+BUILD_TOOLS=(createrepo_c dnf-plugins-core)
+
 log() {
     echo "[$(date)] $*";
 }
