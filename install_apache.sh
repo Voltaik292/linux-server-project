@@ -34,10 +34,10 @@ sed -i "s/^Group .*/Group ${WEB_USER}/" "${HTTPD_CONF}"
 # the web root should be owned by webreport, AND STAY OWNED BY IT ON REBOOT!!
 # i will put a temporary page until the first report exists.
 
-cat > "${TMPFILES_CONF}" << EOF
-d ${WEB_ROOT} 0755 ${WEB_USER} ${WEB_USER} -
-EOF
-    # Expected the /etc/tmpfiles.d/${PROJECT_NAME}.conf to contain d /var/www/html 0755 webreport webreport -
+cp /usr/lib/tmpfiles.d/httpd.conf "${TMPFILES_CONF}"
+sed -i '/html/d' "${TMPFILES_CONF}"
+echo "d ${WEB_ROOT} 0755 ${WEB_USER} ${WEB_USER} -" >> "${TMPFILES_CONF}"
+# Expected the /etc/tmpfiles.d/${PROJECT_NAME}.conf to contain d /var/www/html 0755 webreport webreport -
 
 systemd-tmpfiles --create "${TMPFILES_CONF}"
 
