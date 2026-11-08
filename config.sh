@@ -17,7 +17,7 @@ GPG_KEY="$(ls /etc/pki/rpm-gpg/RPM-GPG-KEY-*"$(rpm -E %rhel)"* 2>/dev/null | hea
 WEB_USER="webreport"                                    # Name of the appache user
 WEB_ROOT="/var/www/html"                                # The folder the apache server serves
 HTTPD_CONF="/etc/httpd/conf/httpd.conf"                 # Apache config, where user/group lines are.
-TMPFILES_CONF="/etc/tmpfiles.d/${PROJECT_NAME}.conf"    # Here i will write the rule that keeps web root owned by the appache user, even after reboot.
+TMPFILES_CONF="/etc/tmpfiles.d/httpd.conf"    # Here i will write the rule that keeps web root owned by the appache user, even after reboot.
 
 
 
