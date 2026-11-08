@@ -27,3 +27,6 @@ fi
 log "Downloading packages and their dependancies"
 mkdir -p "${REPO_DIR}/Packages"
 dnf download --resolve --alldeps --destdir "${REPO_DIR}/Packages" "${PACKAGES[@]}"
+
+log "Creating repo metadata"
+createrepo_c "${REPO_DIR}"
