@@ -24,14 +24,20 @@ else
 fi
 
 
-log "Downloading packages and their dependancies"
-mkdir -p "${REPO_DIR}/Packages"
-dnf download --resolve --alldeps --destdir "${REPO_DIR}/Packages" "${PACKAGES[@]}"
+other_enabled="$(dnf repolist --enabled --quiet | awk 'NR>1 {print $1}' | grep -vx "${REPO_NAME}" || true)"
 
-log "Creating repo metadata"
-createrepo_c "${REPO_DIR}"
+if [[ -z "${other_enabled}" && -f "${REPO_DIR}/repodata/repomd.xml" ]]; then
+    log "Repo already built and it is the only enabled repo, skipping download"
+else
+    log "Downloading packages and their dependencies"
+    mkdir -p "${REPO_DIR}/Packages"
+    dnf download --resolve --alldeps --destdir "${REPO_DIR}/Packages" "${PACKAGES[@]}"
 
-[[ -f "${GPG_KEY}" ]] || die "Distribution GPT key not found in /etc/pki/rpm-gpg/"
+    log "Creating repo metadata"
+    createrepo_c "${REPO_DIR}"
+fi
+
+[[ -f "${GPG_KEY}" ]] || die "Distribution GPG key not found in /etc/pki/rpm-gpg/"
 
 log "Writing repo file ${REPO_FILE}"
 cat > "${REPO_FILE}" <<EOF
@@ -42,3 +48,16 @@ enabled=1
 gpgcheck=1
 gpgkey=file://${GPG_KEY}
 EOF
+
+
+log "Disabling every repo except ${REPO_NAME}"
+for f in /etc/yum.repos.d/*.repo; do
+    if [[ "$f" == "${REPO_FILE}" ]]; then
+        continue
+    fi
+    sed -i 's/^enabled *= *1/enabled=0/' "$f"
+done
+
+dnf clean all > /dev/null
+log "Enabled repos now:"
+dnf repolist --enabled
