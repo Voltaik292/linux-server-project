@@ -30,3 +30,15 @@ dnf download --resolve --alldeps --destdir "${REPO_DIR}/Packages" "${PACKAGES[@]
 
 log "Creating repo metadata"
 createrepo_c "${REPO_DIR}"
+
+[[ -f "${GPG_KEY}" ]] || die "Distribution GPT key not found in /etc/pki/rpm-gpg/"
+
+log "Writing repo file ${REPO_FILE}"
+cat > "${REPO_FILE}" <<EOF
+[${REPO_NAME}]
+name=Private local repo
+baseurl=file://${REPO_DIR}
+enabled=1
+gpgcheck=1
+gpgkey=file://${GPG_KEY}
+EOF

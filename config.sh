@@ -12,6 +12,9 @@ PACKAGES=(httpd mod_ssl)
 
 BUILD_TOOLS=(createrepo_c dnf-plugins-core)
 
+GPG_KEY="$(ls /etc/pki/rpm-gpg/RPM-GPG-KEY-*"$(rpm -E %rhel)"* 2>/dev/null | head -n 1 || true)"
+
+
 log() {
     echo "[$(date)] $*";
 }
