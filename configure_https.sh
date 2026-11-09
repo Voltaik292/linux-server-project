@@ -8,7 +8,7 @@ need_root
 log "Step 3:HTTPS"
 
 log "Installing mod_ssl and openssl"
-dnf install -y mod_ssl openssl
+dnf install -y mod_ssl openssl firewalld
 
 SERVER_NAME="$(hostname)"
 SERVER_IP="$(hostname -I | cut -d' ' -f1)"
@@ -99,3 +99,12 @@ restorecon -R "${REPO_DIR}"
 log "Checking Apache config"
 apachectl configtest
 systemctl restart httpd
+
+
+# the firewall must stay on (the task forbids stopping it), so i open only http and https.
+# enable --now = start at boot and start right now
+log "Opening http and https in the firewall"
+systemctl enable --now firewalld
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
