@@ -8,7 +8,8 @@ INSTALL_LOG="${LOG_DIR}/install.log"
 REPO_NAME="private-local"
 REPO_DIR="/var/www/repo"
 REPO_FILE="/etc/yum.repos.d/${REPO_NAME}.repo"
-PACKAGES=(httpd mod_ssl openssl firewalld)
+PACKAGES=(httpd mod_ssl openssl firewalld ca-certificates)
+
 
 BUILD_TOOLS=(createrepo_c dnf-plugins-core)
 
