@@ -57,3 +57,45 @@ fi
 log "Making the server trust its own certificate"
 cp "${CERT_FILE}" "${TRUST_DIR}/${PROJECT_NAME}.crt"
 update-ca-trust
+
+
+# now i write my own apache config file for the site.
+# apache reads every .conf file in /etc/httpd/conf.d/ by itself.
+# bash fills in the ${...} variables from config.sh before writing it.
+log "Writing Apache site config ${SITE_CONF}"
+cat > "${SITE_CONF}" <<EOF
+ServerName ${SERVER_NAME}
+ServerTokens Prod
+ServerSignature Off
+
+<VirtualHost *:80>
+    Redirect permanent / https://${SERVER_IP}/
+</VirtualHost>
+
+<VirtualHost *:443>
+    DocumentRoot ${WEB_ROOT}
+    SSLEngine on
+    SSLCertificateFile ${CERT_FILE}
+    SSLCertificateKeyFile ${KEY_FILE}
+    CustomLog ${SITE_ACCESS_LOG} combined
+    ErrorLog ${SITE_ERROR_LOG}
+
+    <Directory ${WEB_ROOT}>
+        Options -Indexes
+    </Directory>
+
+    Alias /repo ${REPO_DIR}
+    <Directory ${REPO_DIR}>
+        Options +Indexes
+    </Directory>
+</VirtualHost>
+EOF
+
+# the label that lets apache read the repo folder (i fix the label, i don't turn selinux off)
+mkdir -p "${REPO_DIR}"
+restorecon -R "${REPO_DIR}"
+
+# check the config BEFORE restarting, if it's broken set -e stops here and the site stays up
+log "Checking Apache config"
+apachectl configtest
+systemctl restart httpd
