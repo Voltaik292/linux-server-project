@@ -40,7 +40,7 @@ METRICS_MOUNT="/mnt/metrics"            # mounting point (where do we reach it f
 
 BACKUP_IMG="${IMG_DIR}/backup.img"      # The empty backup space.
 BACKUP_SIZE="1G"                        # It's size.
-BACKUP_MOUNT="/mnt/backup"              # mounting point (where do we access it form)
+BACKUP_MOUNT="/backup"              # mounting point (where do we access it form)
 
 DISK_FS="xfs"                           # file system time for the 2 disks.
 DISK_MODE="0700"                        # only owner can r,w,x, anyone else can do nothing!
