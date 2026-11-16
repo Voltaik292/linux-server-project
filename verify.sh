@@ -32,7 +32,7 @@ archive_ok() (
     cd "${BACKUP_MOUNT}" && sha256sum -c "$(ls "${ARCHIVE_PREFIX}"*.tar.gz | tail -n 1).sha256"
 )
 
-# the checks are all bellow
+# the checks are all below
 
 # i want our own repo to be the only enabled one, nothing from the internet
 check "private-local is the only enabled repo" [ "$(dnf repolist --enabled --quiet | awk 'NR>1 {print $1}')" = "${REPO_NAME}" ]

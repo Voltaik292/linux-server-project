@@ -58,5 +58,5 @@ apachectl configtest
 
 systemctl enable httpd
 systemctl restart httpd
-log "Apache is runnig as ${WEB_USER}"
+log "Apache is running as ${WEB_USER}"
 
