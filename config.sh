@@ -28,7 +28,7 @@ TRUST_DIR="/etc/pki/ca-trust/source/anchors"
 SITE_CONF="/etc/httpd/conf.d/${PROJECT_NAME}.conf"
 SITE_ACCESS_LOG="/var/log/httpd/${PROJECT_NAME}-access.log"
 SITE_ERROR_LOG="/var/log/httpd/${PROJECT_NAME}-error.log"
-
+SSL_DEFAULT_CONF="/etc/httpd/conf.d/ssl.conf"   # mod_ssl's own config, it points to a localhost cert that a fresh server does not have
 
 # Step 4:
 IMG_DIR="/var/lib/${PROJECT_NAME}"

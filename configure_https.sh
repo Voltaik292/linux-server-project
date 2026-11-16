@@ -59,6 +59,13 @@ cp "${CERT_FILE}" "${TRUST_DIR}/${PROJECT_NAME}.crt"
 update-ca-trust
 
 
+# mod_ssl's default config asks for a "localhost" certificate that a fresh server does not have,
+# so apachectl configtest fails. We point it to our own certificate and key instead.
+log "Pointing the default ssl.conf to our certificate"
+sed -i "s|^SSLCertificateFile .*|SSLCertificateFile ${CERT_FILE}|" "${SSL_DEFAULT_CONF}"
+sed -i "s|^SSLCertificateKeyFile .*|SSLCertificateKeyFile ${KEY_FILE}|" "${SSL_DEFAULT_CONF}"
+
+
 # now i write my own apache config file for the site.
 # apache reads every .conf file in /etc/httpd/conf.d/ by itself.
 # bash fills in the ${...} variables from config.sh before writing it.
