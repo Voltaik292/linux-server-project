@@ -64,6 +64,10 @@ KEEP_ARCHIVES=48                        # 48 x 10 min = 8 hours of history
 LOG_KEEP_DAYS=7                         # keep 7 daily copies of cron.log
 
 
+# Step 6:
+PAGE_MAX_AGE=3                          # index.html must be newer than this many minutes
+CURL_TIMEOUT=10                         # seconds to wait for each web check
+
 
 log() {
     echo "[$(date)] $*";
