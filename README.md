@@ -66,3 +66,7 @@ The first run takes a few minutes. Running it again is safe: it does not duplica
 ## Flowcharts
 
 A flowchart of every script and one of the whole project: [docs/flowcharts.md](docs/flowcharts.md)
+
+## AI usage
+
+I used Claude (Anthropic) for explanations, code review, drafting some scripts in small pieces, and testing ideas. I read, changed and committed all code myself, and ran all real tests on an AlmaLinux 10.2 VM. Not tested on Rocky Linux 9.
