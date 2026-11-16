@@ -8,8 +8,7 @@ INSTALL_LOG="${LOG_DIR}/install.log"
 REPO_NAME="private-local"
 REPO_DIR="/var/www/repo"
 REPO_FILE="/etc/yum.repos.d/${REPO_NAME}.repo"
-PACKAGES=(httpd mod_ssl openssl firewalld ca-certificates xfsprogs)
-
+PACKAGES=(httpd mod_ssl openssl firewalld ca-certificates xfsprogs jq cronie logrotate)
 
 BUILD_TOOLS=(createrepo_c dnf-plugins-core)
 
@@ -46,6 +45,24 @@ DISK_FS="xfs"                           # file system time for the 2 disks.
 DISK_MODE="0700"                        # only owner can r,w,x, anyone else can do nothing!
 
 DISK_OPTIONS="loop,defaults,nofail"     # fstab options (field 4)
+
+
+
+# Step 5:
+INSTALL_DIR="/usr/local/bin/${PROJECT_NAME}"    # where cron runs the scripts from (webreport can't enter /root or /home)
+CRON_FILE="/etc/cron.d/${PROJECT_NAME}"         # the one file that holds both jobs
+CRON_LOG="${LOG_DIR}/cron.log"                  # where the jobs print their output
+LOGROTATE_FILE="/etc/logrotate.d/${PROJECT_NAME}"   # tells logrotate how to rotate cron.log
+
+REPORT_SCHEDULE="* * * * *"             # every minute
+ARCHIVE_SCHEDULE="*/10 * * * *"         # every 10 minutes
+
+WEB_INDEX="${WEB_ROOT}/index.html"      # the status page
+REPORT_PREFIX="report_"                 # JSON names: report_<unix-time>.json
+ARCHIVE_PREFIX="reports_"               # archive names: reports_<date>.tar.gz
+KEEP_ARCHIVES=48                        # 48 x 10 min = 8 hours of history
+LOG_KEEP_DAYS=7                         # keep 7 daily copies of cron.log
+
 
 
 log() {
