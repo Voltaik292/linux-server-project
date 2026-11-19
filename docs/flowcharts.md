@@ -108,27 +108,34 @@ flowchart TD
 
 ## Step 4 mount_disks.sh
 
-Two disks, made from image files. The part inside the loop runs once for `/mnt/metrics` and once for `/backup`.
+Two disks. The script uses the **free real disks** it finds (any name: `sdb`, `vdb`, `nvme0n2`...). If there is no free disk, it makes an **image file** and uses that instead. The part inside the loop runs once for `/mnt/metrics` and once for `/backup`.
 
 ```mermaid
 flowchart TD
     A(["start"]) --> B["install xfsprogs<br/>make the folders"]
-    B --> C["next disk"]
-    C --> D{"image file exists?"}
-    D -- no --> E["create it (sparse, only root can read)"]
-    D -- yes --> F
-    E --> F{"has a filesystem?"}
-    F -- yes --> H
-    F -- "empty" --> G["format as xfs"]
-    F -- "other error" --> X1["stop: never format by mistake"]:::stop
-    G --> H{"line in /etc/fstab?"}
-    H -- no --> I["add it"]
-    H -- yes --> J
-    I --> J{"mounted?"}
-    J -- no --> K["mount it"]
+    B --> B2["look for free disks<br/>(whole disk, nothing written on it)"]
+    B2 --> C["next disk<br/>(metrics first, then backup)"]
+    C --> D{"line in /etc/fstab?"}
+    D -- "yes, done in an earlier run" --> J
+    D -- no --> E{"a free disk left?"}
+
+    E -- yes --> F1["use the free disk"]
+    F1 --> F2["format as xfs, only if empty"]
+    F2 --> F3["add its UUID line to /etc/fstab"]
+    F3 --> J
+
+    E -- no --> G1["create the image file<br/>(sparse, only root can read)"]
+    G1 --> G2["format as xfs, only if empty"]
+    G2 --> G3["add the image line to /etc/fstab"]
+    G3 --> J
+
+    F2 -- "blkid error" --> X1["stop: never format by mistake"]:::stop
+    G2 -- "blkid error" --> X1
+
+    J{"mounted?"} -- no --> K["mount it"]
     J -- yes --> L
-    K --> L{"it is really our image?<br/>(same UUID)"}
-    L -- no --> X2["stop"]:::stop
+    K --> L{"really mounted now?"}
+    L -- no --> X2["stop: the disk is missing"]:::stop
     L -- yes --> M["owner webreport, mode 0700"]
     M --> N{"both disks done?"}
     N -- no --> C
@@ -230,7 +237,7 @@ flowchart TD
         S1["1 private repo<br/>download packages, build the repo<br/>only private-local stays enabled"]
         S2["2 Apache<br/>install httpd from the repo<br/>runs as webreport"]
         S3["3 HTTPS<br/>own certificate, redirect, /repo/<br/>firewall open"]
-        S4["4 disks<br/>/mnt/metrics and /backup<br/>formatted once, in fstab, mounted"]
+        S4["4 disks<br/>/mnt/metrics and /backup<br/>free disks, or image files if none<br/>formatted once, in fstab, mounted"]
         S5["5 cron<br/>installs the two jobs and log rotation<br/>runs them once"]
         S6["6 verify<br/>20 checks, PASS or FAIL"]
         S1 --> S2 --> S3 --> S4 --> S5 --> S6

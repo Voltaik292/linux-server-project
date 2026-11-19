@@ -7,7 +7,7 @@ One command turns a fresh Rocky Linux 9 server into a **self-reporting web serve
 - Builds its **own private dnf repository** on the machine. Every package comes from it (GPG check on, no other repo enabled).
 - Runs Apache as its own user (`webreport`) with **HTTPS** (self-signed certificate). HTTP redirects to HTTPS.
 - Keeps SELinux on **Enforcing** and firewalld **on**.
-- Makes two disks (`/mnt/metrics` and `/backup`) and mounts them again after every reboot.
+- Makes two disks (`/mnt/metrics` and `/backup`) and mounts them again after every reboot. It uses the free (empty) disks it finds. If there is none, it uses image files.
 - **Every minute** it writes a status page and a JSON report.
 - **Every 10 minutes** it packs the reports into a compressed archive with a SHA-256 checksum. Only the newest 48 archives are kept.
 - The cron jobs run as `webreport`, not as root. The cron log is rotated every day.
@@ -17,6 +17,7 @@ One command turns a fresh Rocky Linux 9 server into a **self-reporting web serve
 
 - Made for Rocky Linux 9. Tested on AlmaLinux 10.2.
 - A user with `sudo`.
+- Two empty extra disks (optional). With fewer than two, the missing ones are made from image files.
 - Internet during the first run only. After that the server installs everything from its own repo.
 
 ## Run it
@@ -45,7 +46,7 @@ The first run takes a few minutes. Running it again is safe: it does not duplica
 | `setup_private_repo.sh` | step 1: builds the private dnf repository |
 | `install_apache.sh` | step 2: installs Apache and runs it as `webreport` |
 | `configure_https.sh` | step 3: certificate, HTTPS, redirect, `/repo/`, firewall |
-| `mount_disks.sh` | step 4: creates, formats and mounts the two disks |
+| `mount_disks.sh` | step 4: finds free disks (or makes image files), formats and mounts the two disks |
 | `setup_crons.sh` | step 5: installs the jobs, the cron file and log rotation |
 | `generate_report.sh` | run by cron every minute: status page and JSON report |
 | `archive_reports.sh` | run by cron every 10 minutes: archive and checksum |
