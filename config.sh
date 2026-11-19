@@ -44,8 +44,9 @@ BACKUP_MOUNT="/backup"              # mounting point (where do we access it form
 DISK_FS="xfs"                           # file system time for the 2 disks.
 DISK_MODE="0700"                        # only owner can r,w,x, anyone else can do nothing!
 
-DISK_OPTIONS="loop,defaults,nofail"     # fstab options (field 4)
 
+DISK_OPTIONS="loop,defaults,nofail"      # fstab options for an image file (loop = it's a file)
+DISK_OPTIONS_REAL="defaults,nofail"      # fstab options for a real disk (no loop, it's not a file)
 
 
 # Step 5:
